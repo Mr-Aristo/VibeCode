@@ -54,17 +54,18 @@ graph LR
 
 ### Sprint 1 — P0 / Hatalar (hazır)
 
-| ID | Başlık | Boyut | Durum | Spec |
-|---|---|---|---|---|
-| FIX-001 | Feature flag adı uyuşmazlığı (`OrderFullfilment` ↔ `OrderFullfillment`) | XS | 🔄 | [spec](FIX-001-feature-flag-mismatch/spec.md) · [plan](FIX-001-feature-flag-mismatch/plan.md) |
+| ID | Başlık | Boyut | Durum | Branch / PR | Spec |
+|---|---|---|---|---|---|
+| FIX-001 | Feature flag adı uyuşmazlığı (`OrderFullfilment` ↔ `OrderFullfillment`) | XS | ✅ | merged `#34` | [spec](FIX-001-feature-flag-mismatch/spec.md) · [plan](FIX-001-feature-flag-mismatch/plan.md) |
+| FIX-002 | `IntegrationEvent` kimlik kararlılığı (id/OccuredOn) | S | 🔄 | `fix/messaging-event-identity` (PR bekliyor) | [spec](FIX-002-integration-event-identity/spec.md) · [plan](FIX-002-integration-event-identity/plan.md) |
+| FIX-003 | GetBasket endpoint OpenAPI metadata düzeltmesi | XS | 🔄 | `fix/basket-getbasket-metadata` (PR bekliyor) | [spec](FIX-003-getbasket-endpoint-metadata/spec.md) · [plan](FIX-003-getbasket-endpoint-metadata/plan.md) |
+| FIX-004 | `CachedBasketRepository` null güvenliği | S | 🔄 | `fix/basket-cache-null-safety` (PR bekliyor) | [spec](FIX-004-cached-basket-null-safety/spec.md) · [plan](FIX-004-cached-basket-null-safety/plan.md) |
+| FIX-005 | CancellationToken yayılımı (repository SaveChanges) | XS | 🔄 | `fix/basket-cancellation-token` (PR bekliyor) | [spec](FIX-005-cancellation-token-propagation/spec.md) · [plan](FIX-005-cancellation-token-propagation/plan.md) |
 
-> **FIX-001 ilerleme:** Uygulandı ve `fix/order-feature-flag-name` branch'ine push edildi.
-> Build ✅ · Test: 28 geçti / 4 **önceden var olan** (FIX-001 ile ilgisiz) hata. PR UI'da açılmayı bekliyor:
-> `https://github.com/Mr-Aristo/ECommerce_Microservices/pull/new/fix/order-feature-flag-name`
-| FIX-002 | `IntegrationEvent` kimlik kararlılığı (id/OccuredOn) | S | 📝 | [spec](FIX-002-integration-event-identity/spec.md) · [plan](FIX-002-integration-event-identity/plan.md) |
-| FIX-003 | GetBasket endpoint OpenAPI metadata düzeltmesi | XS | 📝 | [spec](FIX-003-getbasket-endpoint-metadata/spec.md) · [plan](FIX-003-getbasket-endpoint-metadata/plan.md) |
-| FIX-004 | `CachedBasketRepository` null güvenliği | S | 📝 | [spec](FIX-004-cached-basket-null-safety/spec.md) · [plan](FIX-004-cached-basket-null-safety/plan.md) |
-| FIX-005 | CancellationToken yayılımı (repository SaveChanges) | XS | 📝 | [spec](FIX-005-cancellation-token-propagation/spec.md) · [plan](FIX-005-cancellation-token-propagation/plan.md) |
+> **FIX-002–005 ilerleme:** Her biri ayrı branch'e uygulanıp push edildi. Build ✅ · Test: her birinde
+> 28 geçti / 4 **önceden var olan** (bu fix'lerle ilgisiz, master'da da kırık) hata. PR'lar UI'da açılmayı bekliyor.
+> Tarama notu (FIX-005): DiscountService ve Order seeding'de de parametresiz `SaveChangesAsync()` var —
+> ayrı bir takip FIX'i olarak ele alınmalı (kapsam şişirmemek için bu FIX'e dahil edilmedi).
 
 ### Sprint 2 — P1 / Dayanıklılık
 
