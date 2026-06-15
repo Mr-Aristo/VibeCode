@@ -121,7 +121,8 @@ graph LR
 | FIX-021 | Central Package Management + sürüm hizalama | S | ⬜ | — |
 | FIX-022 | Gateway'i docker-compose'a ekleme | S | ⬜ | FIX-011 |
 | FIX-023 | Swagger/OpenAPI UI + API versiyonlama | M | ⬜ | — |
-| FIX-024 | CancellationToken yayılımı — DiscountService (gRPC) | XS | 🔄 | FIX-005 takibi; `fix/p1-reliability` branch'inde |
+| FIX-024 | CancellationToken yayılımı — DiscountService (gRPC) | XS | ✅ | FIX-005 takibi; `fix/p1-reliability` ile merge edildi |
+| FIX-025 | Gateway'i docker-compose'a entegre et + startup ordering | M | 🔄 | `fix/gateway-docker-integration`; gateway container'da, hedefler servis-DNS, healthcheck+`service_healthy`, catch-all kaldırıldı |
 
 **Boyut:** XS (<1s), S (~yarım gün), M (~1 gün), L (birkaç gün), XL (epic, bölünmeli).
 
