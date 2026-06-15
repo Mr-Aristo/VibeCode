@@ -14,7 +14,7 @@ E-Commerce Microservices çözümü için **mühendislik dokümantasyonu ve plan
 | [docs/improvement-plan.md](docs/improvement-plan.md) | Kod incelemesine dayalı önceliklendirilmiş fix/geliştirme planı |
 | [docs/fixes/](docs/fixes/) | Spec-driven düzeltme çalışma alanı (her FIX için spec + plan) |
 | [CLAUDE.md](CLAUDE.md) | Proje için mühendislik ajanı talimatları/konvansiyonları |
-| [.claude/skills/](.claude/skills/) | Projeye özel beceri (skill) tanımları |
+| [.claude/](.claude/) | Claude Code çalışma alanı: `agents/`, `commands/` (spec-driven), `docs/`, `skills/`, `settings.json` — bkz. [.claude/README.md](.claude/README.md) |
 
 ## Spec-Driven Akış
 
