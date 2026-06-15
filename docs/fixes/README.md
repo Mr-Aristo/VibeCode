@@ -69,14 +69,20 @@ graph LR
 
 ### Sprint 2 — P1 / Dayanıklılık
 
-| ID | Başlık | Boyut | Durum | Bağımlılık |
+| ID | Başlık | Boyut | Durum | Not |
 |---|---|---|---|---|
-| FIX-006 | Outbox retention / temizleme | S | ⬜ | — |
-| FIX-007 | MassTransit retry + delayed redelivery + error kuyruğu | M | ⬜ | — |
-| FIX-008 | Order tarafı idempotency / inbox | M | ⬜ | FIX-002, FIX-007 |
-| FIX-009 | gRPC resilience + toplu (batch) kupon | M | ⬜ | — |
-| FIX-010 | `DispatchDomainEventsInterceptor` async-only | S | ⬜ | — |
-| FIX-011 | Eksik health check'ler + docker healthcheck/depends_on | M | ⬜ | — |
+| FIX-006 | Outbox retention / temizleme | S | 🔄 | Yayınlanan outbox satırları 1s sonra silinir |
+| FIX-007 | MassTransit retry | M | 🔄 | In-memory retry eklendi; delayed redelivery RabbitMQ plugin gerektirdiği için **ertelendi** |
+| FIX-008 | Order tarafı idempotency / inbox | M | ✅ | **Doğrulandı:** `CreateOrderHandler` zaten idempotent (OrderId=CheckoutId) + Basket `PendingCheckoutId` koruması. Tam inbox = over-engineering/migration riski → eklenmedi |
+| FIX-009 | gRPC resilience | M | 🔄 | gRPC çağrısına 5s deadline; tam retry/circuit-breaker + batch **ertelendi** (yeni paket/proto gerekir) |
+| FIX-010 | `DispatchDomainEventsInterceptor` async-only | S | 🔄 | Sync (sync-over-async) override kaldırıldı |
+| FIX-011 | Health check'ler | M | 🔄 | Discount + Gateway `/health` eklendi; docker-compose healthcheck/depends_on **ertelendi** (compose doğrulanamıyor) |
+
+> **Sprint 2 ilerleme:** FIX-006, 007, 009, 010, 011 + FIX-024 **tek branch'te** toplandı:
+> `fix/p1-reliability` (PR bekliyor). Build ✅ · Test: 28 geçti / 4 **önceden var olan** (bu fix'lerle ilgisiz) hata — yeni regresyon yok.
+> **Test notu:** Bu fix'ler altyapı/konfigürasyon değişiklikleri; birim testi için ya yeni paket (MassTransit.Testing) ya da
+> gerçek altyapı (Testcontainers) gerekir. Mevcut EF InMemory harness'i Order aggregate'ini (ComplexProperty) modelleyemediği
+> için (4 kırık testin sebebi de bu) buraya kırılgan test eklenmedi. Gerçek kapsam → FIX-019 (integration testleri).
 
 ### Sprint 3 — P2 / Güvenlik
 
@@ -112,6 +118,7 @@ graph LR
 | FIX-021 | Central Package Management + sürüm hizalama | S | ⬜ | — |
 | FIX-022 | Gateway'i docker-compose'a ekleme | S | ⬜ | FIX-011 |
 | FIX-023 | Swagger/OpenAPI UI + API versiyonlama | M | ⬜ | — |
+| FIX-024 | CancellationToken yayılımı — DiscountService (gRPC) | XS | 🔄 | FIX-005 takibi; `fix/p1-reliability` branch'inde |
 
 **Boyut:** XS (<1s), S (~yarım gün), M (~1 gün), L (birkaç gün), XL (epic, bölünmeli).
 
