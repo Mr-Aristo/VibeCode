@@ -1,0 +1,16 @@
+# Separate repository — has its own git remote, excluded here
+ECommerce_Microservices/
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+*.user
+
+# IDE / editor
+.vs/
+.idea/
+*.suo
+
+# OS
+Thumbs.db
+.DS_Store
