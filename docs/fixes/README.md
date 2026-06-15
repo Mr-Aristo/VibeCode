@@ -102,8 +102,8 @@ graph LR
 
 | ID | Başlık | Boyut | Durum | Bağımlılık |
 |---|---|---|---|---|
-| FIX-015 | Serilog standardizasyonu (paylaşılan) | M | ⬜ | — |
-| FIX-016 | OpenTelemetry tracing + CorrelationId | L | ⬜ | FIX-015, FIX-002 |
+| FIX-015 | Serilog standardizasyonu (paylaşılan) + Seq | M | 🔄 | `fix/gateway-docker-integration` (PR bekliyor) |
+| FIX-016 | OpenTelemetry traces + metrics + log korelasyonu | L | 🔄 | aynı branch'te; FIX-015 üzerine |
 
 ### Sprint 5 — P4 / Test
 
