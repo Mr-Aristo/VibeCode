@@ -79,10 +79,13 @@ graph LR
 | FIX-011 | Health check'ler | M | 🔄 | Discount + Gateway `/health` eklendi; docker-compose healthcheck/depends_on **ertelendi** (compose doğrulanamıyor) |
 
 > **Sprint 2 ilerleme:** FIX-006, 007, 009, 010, 011 + FIX-024 **tek branch'te** toplandı:
-> `fix/p1-reliability` (PR bekliyor). Build ✅ · Test: 28 geçti / 4 **önceden var olan** (bu fix'lerle ilgisiz) hata — yeni regresyon yok.
-> **Test notu:** Bu fix'ler altyapı/konfigürasyon değişiklikleri; birim testi için ya yeni paket (MassTransit.Testing) ya da
-> gerçek altyapı (Testcontainers) gerekir. Mevcut EF InMemory harness'i Order aggregate'ini (ComplexProperty) modelleyemediği
-> için (4 kırık testin sebebi de bu) buraya kırılgan test eklenmedi. Gerçek kapsam → FIX-019 (integration testleri).
+> `fix/p1-reliability` (PR bekliyor). Build ✅ · **Test: 32/32 geçiyor** (önceki 4 kırık test onarıldı).
+>
+> **Onarılan 4 test + 1 üretim kontrat hatası:**
+> - `CheckoutBasket` endpoint'i `Results.Ok` (200) dönerken `Produces(201)` ilan ediyordu → **üretim fix'i** (200'e hizalandı).
+> - `CreateOrderHandlerTests`: EF **InMemory** `ComplexProperty`'yi (Address) sorgulayamıyor → testler **SQLite in-memory** (ilişkisel) sağlayıcıya taşındı.
+> - `BasketCheckoutEventHandlerTests`: Moq callback imzası `IRequest<CreateOrderResult>` olmalıydı.
+> - `CheckoutBasketEndpointContractTests`: endpoint'ler `IEndpointRouteBuilder.DataSources`'tan okunmalı (DI `EndpointDataSource` pipeline kurulmadan dolmuyor).
 
 ### Sprint 3 — P2 / Güvenlik
 
