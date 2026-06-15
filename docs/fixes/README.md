@@ -91,8 +91,8 @@ graph LR
 
 | ID | Başlık | Boyut | Durum | Bağımlılık |
 |---|---|---|---|---|
-| FIX-012 | Sırların dışarı alınması (secrets) | S | ⬜ | — |
-| FIX-013 | Authentication & Authorization (EPIC — bölünür) | XL | ⬜ | FIX-012 |
+| FIX-012 | Sırların dışarı alınması (secrets) | S | 🔄 | `feat/security-and-integration-tests` (PR bekliyor) |
+| FIX-013 | Authentication & Authorization (EPIC — bölünür) | XL | ⏸️ | **Ertelendi** → Identity/Users özelliğiyle birlikte spec-driven tasarlanacak (Keycloak realm/claim modeli o domain'in parçası) |
 | └ FIX-013.1 | Paylaşılan JWT doğrulama altyapısı | M | ⬜ | FIX-012 |
 | └ FIX-013.2 | Gateway'de merkezi kimlik doğrulama | M | ⬜ | FIX-013.1 |
 | └ FIX-013.3 | Basket/Order endpoint'lerini koruma | M | ⬜ | FIX-013.2 |
@@ -111,7 +111,7 @@ graph LR
 |---|---|---|---|---|
 | FIX-017 | Checkout saga birim testleri | M | ⬜ | FIX-006..008 |
 | FIX-018 | Order/Discount handler + consumer testleri | M | ⬜ | — |
-| FIX-019 | Integration testleri (WebApplicationFactory + Testcontainers) | L | ⬜ | — |
+| FIX-019 | Integration testleri (Testcontainers) | L | 🔄 | İlk artım (Basket/Marten/Postgres) `feat/security-and-integration-tests`; SQL Server/RabbitMQ/WebAppFactory sonraki artımlar |
 
 ### Sürekli — P5 / Tutarlılık & Bakım
 
