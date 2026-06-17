@@ -2,6 +2,14 @@
 
 > İlgili spec: [spec.md](spec.md). **NASIL** + fazlı uygulama. Her faz kendi branch'i + MR'ı olur (epic, tek MR değil).
 
+## Gap Analizi Düzeltmeleri (mevcut kod incelemesi)
+Kodu inceleyince plana eklenen/düzeltilen noktalar:
+- **G1 — OrderStatus enum yetersiz.** Mevcut: `Draft, Pending, Completed, Cancelled`. Yaşam döngüsü için **genişletilecek**: `Pending, Confirmed, Processing, Shipped, Delivered, Cancelled, Failed, ReturnRequested, Returned`. `Draft`/`Completed` kullanımları map'lenir; EF `Status` (string) dönüşümü + **migration** gerekir.
+- **G2 — `BasketCheckoutEvent` kontratı DEĞİŞMEZ (additive gereksiz).** Event zaten `CustomerId (Guid)` + `UserName` taşıyor. Plan'daki "yeni `UserId` alanı" **iptal**. Bunun yerine `CustomerId = Guid(sub)` ve `UserName = preferred_username/email` artık **client'tan değil token'dan** doldurulur — şema aynı, **kaynak** değişir (kırıcı değişiklik yok). `CheckoutBasketCommandValidator`'daki `CustomerId`/`UserName` client-zorunluluğu kaldırılır; sunucu set eder.
+- **G3 — Basket route'ları `{userName}` parametresini bırakır.** Kimlik token `sub`'tan; `GET /basket`, `DELETE /basket`, `/basket-store`, `/basket/checkout` `sub`'ı token'dan alır; `ShoppingCard.UserName = sub` sunucu tarafında set edilir (client'a güvenilmez). Gateway route'ları güncellenir.
+- **G4 — Order `CustomerId = Guid(sub)` + snapshot.** Consumer `CustomerId`'yi event'ten alır; ad/e-posta snapshot'ı event'in `FirstName/LastName/EmailAddress` alanlarından (`Customer.Create(id,name,email)` yeterli). **Varsayım:** Keycloak `sub` = UUID → `Guid.Parse` edilebilir.
+- **G5 — `StoreBasketEndpoints` metadata hatalı** (`WithName("CreateProduct")`/"Create Product") — Basket auth değişiklikleriyle düzeltilecek.
+
 ## Yaklaşım & Mimari Değişimler
 - **Yeni servis `Users.API`** (vertical slice; Catalog/Basket gibi: Carter + MediatR + FluentValidation + Marten/Postgres + health + Serilog/OTel). `add-microservice` skill'ine göre scaffold.
 - **Keycloak** docker-compose'a; tek realm `eshop`; `eshop-spa` (public, Auth Code + PKCE) + resource-server doğrulama.
@@ -28,14 +36,16 @@
 - **JIT provisioning**: authenticated istek geldiğinde profil yoksa `sub`+`email`'den oluştur (middleware veya handler).
 - Marten/Postgres (`usersdb`), health, Serilog/OTel, gateway route `/users-service/**` + `.env`/compose girişi + Dockerfile.
 
-### 4. Basket — `sub`'a taşıma + auth'lu checkout
-- Sepet anahtarı `username` → `sub` (token'dan). Checkout `RequireAuthorization("customer")`.
+### 4. Basket — `sub`'a taşıma + auth'lu checkout (bkz. G2/G3/G5)
+- Route'lar `{userName}` parametresini bırakır; kimlik token `sub`'tan. `ShoppingCard.UserName = sub` sunucu set eder. Checkout/store `RequireAuthorization("customer")`.
 - Misafir sepeti: anonim sepet + login'de merge (O5 önerisi).
-- **`BasketCheckoutEvent`'e `UserId` (sub) ekle — additive** (mevcut alanlar korunur). `CheckoutBasketHandler` `sub`'ı doldurur.
+- **`BasketCheckoutEvent` şeması değişmez:** `CheckoutBasketHandler` `CustomerId=Guid(sub)` ve `UserName`'i token'dan doldurur; validator'dan client-zorunlulukları kaldırılır.
+- `StoreBasketEndpoints` metadata hatası düzeltilir (G5).
 
-### 5. Order — CustomerId=sub + durum makinesi + geçmiş
-- `Customer` → `CustomerId = sub` + ad/e-posta **snapshot**. Checkout consumer `UserId`→`CustomerId` map'ler.
-- **Durum makinesi** (`Pending→Confirmed→Processing→Shipped→Delivered`, `Cancelled`/`Failed`) aggregate'te enforce; **`OrderStatusHistory`** child + **migration**.
+### 5. Order — CustomerId=sub + durum makinesi + geçmiş (bkz. G1/G4)
+- `CustomerId = Guid(sub)` + ad/e-posta **snapshot** (event alanlarından). Checkout consumer map'ler.
+- **OrderStatus enum genişletilir** (G1: `Pending,Confirmed,Processing,Shipped,Delivered,Cancelled,Failed,ReturnRequested,Returned`) + EF/migration.
+- **Durum makinesi** aggregate'te enforce; **`OrderStatusHistory`** child + **migration**.
 - Endpoint'ler: `GET /me/orders`, `GET /me/orders/{id}` (owner); admin `POST /orders/{id}/process|ship|deliver|cancel` (rol authz). Her geçiş `OrderStatusChanged` event (Outbox, additive).
 
 ### 6. Gateway + Observability
