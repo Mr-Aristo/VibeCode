@@ -92,7 +92,7 @@ graph LR
 | ID | Başlık | Boyut | Durum | Bağımlılık |
 |---|---|---|---|---|
 | FIX-012 | Sırların dışarı alınması (secrets) | S | 🔄 | `feat/security-and-integration-tests` (PR bekliyor) |
-| FIX-013 | Authentication & Authorization (EPIC — bölünür) | XL | ⏸️ | **Ertelendi** → Identity/Users özelliğiyle birlikte spec-driven tasarlanacak (Keycloak realm/claim modeli o domain'in parçası) |
+| FIX-013 | Authentication & Authorization (EPIC) | XL | 🔄 | **FEAT-001 Identity/Users** olarak ele alınıyor. **Faz 1 tamam** (`feat/identity-phase1-auth-profile`): Keycloak+JWT, Users.API (profil/adres/JIT), Basket+Order auth, Order lifecycle+migration, gateway edge authz. Faz 2 (favoriler+iade) O1–O3 sonrası |
 | └ FIX-013.1 | Paylaşılan JWT doğrulama altyapısı | M | ⬜ | FIX-012 |
 | └ FIX-013.2 | Gateway'de merkezi kimlik doğrulama | M | ⬜ | FIX-013.1 |
 | └ FIX-013.3 | Basket/Order endpoint'lerini koruma | M | ⬜ | FIX-013.2 |
