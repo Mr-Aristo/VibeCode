@@ -9,6 +9,7 @@
 | **Keycloak** (container) | Identity provider (OIDC/JWT) | — | Realm `eshop` imported (`keycloak/realms/eshop-realm.json`); client `eshop-spa` (public+PKCE); roles `customer`, `support-agent`, `fulfillment-manager`, `catalog-manager`, `super-admin` |
 | **UsersAPI** | Profile, addresses, favorites | PostgreSQL (Marten) | `Id = sub`; JIT provisioning on first authenticated request |
 | **PaymentAPI** | Simulated payment/refund | PostgreSQL (Marten) | Mock: captures on checkout, refunds on return approval |
+| **NotificationAPI** | Mock notifications (consumer-only) | — (no DB) | Consumes order/return events and logs notifications (event fan-out demo) |
 
 ## Cross-cutting (BuildingBlock)
 - `AddStandardJwtAuth` — Keycloak bearer validation (Authority/Audience from config, `realm_access.roles` → role claims).
@@ -33,17 +34,23 @@
 - Support `POST /orders/{id}/returns/approve|reject|refund` (support-agent/super-admin).
 - Events: `ReturnRequested`, `ReturnApproved`, `OrderReturned`.
 
-### Payment (mock) — `feat/identity-phase2-payment` (PR pending)
+### Payment (mock) — `feat/identity-phase2-payment` (merged #45)
 - **PaymentAPI** consumers: `BasketCheckoutEvent` → capture (mock); `ReturnApproved` → refund (mock) → publish `RefundCompleted`.
 - Order consumes `RefundCompleted` → `CompleteRefund` → `Returned`. **Closes the return/refund loop automatically** (the manual `/returns/refund` endpoint remains as an admin fallback).
 - `GET /payments/{orderId}` for visibility.
+
+### Catalog admin authz — `feat/identity-phase2-catalog-authz` (merged #46)
+- Catalog wired with `AddStandardJwtAuth` + `UseAuthentication/UseAuthorization`; `Jwt__Authority` in appsettings + compose.
+- `CreateProduct`/`UpdateProduct`/`DeleteProduct` now `RequireAuthorization(RequireRole("catalog-manager","super-admin"))`. Browse/read endpoints stay anonymous.
+
+### Notifications — `feat/identity-phase2-notifications` (merged #47)
+- **NotificationAPI**: consumer-only, no DB/Carter. Consumes `OrderStatusChanged`, `ReturnRequested`, `OrderReturned` and logs mock notifications (demonstrates RabbitMQ event fan-out alongside Payment/Order consumers).
 
 ## Open decisions adopted (O1–O3)
 - **O1** → mock Payment service (above). **O2** → 14-day window, manual approval; partial/per-item returns deferred. **O3** → stock stays in Catalog (restock wiring deferred to a Catalog consumer).
 
 ## Not yet done (Phase 2/3 backlog)
-- Admin sub-role enforcement on Catalog/Discount (product/coupon management).
-- Notifications consumer (`OrderStatusChanged`/`Return*`).
+- Discount coupon-management authz (gRPC; Catalog product management is done).
 - Stock restock on return (Catalog consumer of `ReturnApproved`).
 - Favorites→Catalog enrichment; per-item partial returns; checkout-time payment authorize (currently capture-only).
 - Phase 3: GDPR delete/export, carrier webhook auto-deliver, user-specific coupons, Inventory/Payment as fuller services.
