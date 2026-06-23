@@ -170,3 +170,49 @@ gRPC"), read every relevant skill before starting.
   user (e.g. running a migration, restarting a container), and any contract that changed.
 - Keep diffs minimal and focused on the request. Don't reformat unrelated code.
 - Prefer editing existing files over creating parallel/duplicate structures.
+
+---
+
+## 10. gstack (vendored into this repo)
+
+[gstack](https://github.com/garrytan/gstack) is vendored as a **git submodule** at
+[.claude/skills/gstack/](.claude/skills/gstack/) (full, **unmodified** upstream — do not edit it;
+changes belong upstream). Its 53 skills are registered as `.claude/skills/gstack-<name>/` so they
+are available as slash commands (`/gstack-<name>`) alongside this project's own skills
+(`add-feature-slice`, `outbox-saga`, etc.). The project's own skills and e-commerce architecture
+take precedence — gstack is additive tooling, not a replacement.
+
+**Updating gstack from upstream:**
+
+```bash
+# see what's new upstream (without changing anything)
+git -C .claude/skills/gstack fetch
+git -C .claude/skills/gstack log --oneline HEAD..origin/main      # new commits
+git -C .claude/skills/gstack diff --stat HEAD..origin/main        # changed files
+# pull the updates, then regenerate the gstack-<name>/ registration dirs
+git submodule update --remote .claude/skills/gstack
+bash .claude/skills/gstack-refresh.sh
+```
+
+The registration dirs are derived artifacts — `gstack-refresh.sh` rebuilds them from the
+submodule (gstack's own `./setup` would do this too, but it needs Bun).
+
+- Use `/gstack-browse` for web browsing; never use `mcp__claude-in-chrome__*` tools.
+- Available gstack skills (prefix every name with `gstack-`):
+  `office-hours`, `plan-ceo-review`, `plan-eng-review`, `plan-design-review`, `plan-devex-review`,
+  `plan-tune`, `design-consultation`, `design-shotgun`, `design-html`, `design-review`,
+  `review`, `ship`, `land-and-deploy`, `canary`, `benchmark`, `benchmark-models`,
+  `browse`, `qa`, `qa-only`, `scrape`, `skillify`, `setup-browser-cookies`, `setup-deploy`,
+  `setup-gbrain`, `sync-gbrain`, `retro`, `investigate`, `health`, `learn`, `careful`,
+  `freeze`, `unfreeze`, `guard`, `upgrade`, `cso`, `autoplan`, `spec`, `diagram`,
+  `document-release`, `document-generate`, `context-save`, `context-restore`, `pair-agent`,
+  `codex`, `landing-report`, `devex-review`, `open-gstack-browser`,
+  `ios-qa`, `ios-fix`, `ios-clean`, `ios-sync`, `ios-design-review`.
+
+**Environment note:** gstack's own installer (`./setup`) and several skills require **Bun**
+(and Node on Windows), which is **not installed on this machine**. Markdown-only methodology
+skills (`/gstack-office-hours`, `/gstack-review`, `/gstack-plan-*`, `/gstack-retro`,
+`/gstack-investigate`, `/gstack-cso`, `/gstack-ship`, `/gstack-qa`, etc.) work as-is.
+Binary-backed skills (`/gstack-browse`, `/gstack-design-html` rendering, `/gstack-make-pdf`)
+and `bin/gstack-*` helpers stay inert until Bun is installed and
+`.claude/skills/gstack/setup` is run.
