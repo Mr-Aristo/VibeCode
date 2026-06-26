@@ -96,7 +96,7 @@ graph LR
 | └ FIX-013.1 | Paylaşılan JWT doğrulama altyapısı | M | ⬜ | FIX-012 |
 | └ FIX-013.2 | Gateway'de merkezi kimlik doğrulama | M | ⬜ | FIX-013.1 |
 | └ FIX-013.3 | Basket/Order endpoint'lerini koruma | M | ⬜ | FIX-013.2 |
-| FIX-014 | HTTPS redirection/HSTS + rate limit genişletme | S | ⬜ | FIX-011 |
+| FIX-014 | HTTPS redirection/HSTS + rate limit genişletme | S | ⬜ | FIX-011 · rate-limit yarısı **FIX-030**'da somutlaştırıldı |
 
 ### Sprint 4 — P3 / Gözlemlenebilirlik
 
@@ -112,6 +112,20 @@ graph LR
 | FIX-017 | Checkout saga birim testleri | M | ⬜ | FIX-006..008 |
 | FIX-018 | Order/Discount handler + consumer testleri | M | ⬜ | — |
 | FIX-019 | Integration testleri (Testcontainers) | L | 🔄 | İlk artım (Basket/Marten/Postgres) `feat/security-and-integration-tests`; SQL Server/RabbitMQ/WebAppFactory sonraki artımlar |
+
+### Sprint 6 — P2 / Güvenlik (2026-06-26 denetimi)
+
+> `/cso` güvenlik denetiminden (2026-06-26) çıkan, mevcut backlog'da kapsanmayan yeni bulgular.
+> FEAT-001 auth çalışması sonrası kalan boşluklar + 06-15 planı sonrası eklenen PaymentAPI.
+> Sıra: **FIX-026 (CRITICAL) → 027 → 030 → 028 → 029**. Tüm spec'ler 📝 onay bekliyor.
+
+| ID | Başlık | Boyut | Durum | Sev | Spec |
+|---|---|---|---|---|---|
+| FIX-026 | Order.API endpoint yetkilendirme boşlukları (GET/PUT/DELETE/POST `/orders`, by-customer, by-name korumasız) | S | 📝 | 🔴 CRITICAL | [spec](FIX-026-order-endpoint-authorization/spec.md) · [plan](FIX-026-order-endpoint-authorization/plan.md) |
+| FIX-027 | PaymentAPI kimlik doğrulama & yetkilendirme (auth hiç kurulmamış; `GET /payments/{id}` açık) | S | 📝 | 🔴 HIGH | [spec](FIX-027-payment-api-auth/spec.md) · [plan](FIX-027-payment-api-auth/plan.md) |
+| FIX-028 | Checkout idempotency-key + eşzamanlılık koruması | M | 📝 | 🟡 MEDIUM | [spec](FIX-028-checkout-idempotency-key/spec.md) · [plan](FIX-028-checkout-idempotency-key/plan.md) |
+| FIX-029 | JWT audience doğrulamasının etkinleştirilmesi (`Jwt:Audience` hiçbir yerde yok) | S | 📝 | 🟡 MEDIUM | [spec](FIX-029-jwt-audience-validation/spec.md) · [plan](FIX-029-jwt-audience-validation/plan.md) |
+| FIX-030 | IP-bazlı rate limiting + hassas rotalarda throttling (FIX-014 somutlaştırması) | M | 📝 | 🟡 MEDIUM | [spec](FIX-030-ip-rate-limiting/spec.md) · [plan](FIX-030-ip-rate-limiting/plan.md) |
 
 ### Sürekli — P5 / Tutarlılık & Bakım
 
