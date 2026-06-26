@@ -14,3 +14,6 @@ ECommerce_Microservices/
 # OS
 Thumbs.db
 .DS_Store
+
+# local toolchain (portable Node + mermaid-cli for diagram rendering)
+.tools/
